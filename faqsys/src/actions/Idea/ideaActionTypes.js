@@ -1,0 +1,5 @@
+export const SET_IDEAS = 'SET_IDEAS'
+export const SET_FILTERED_IDEAS = 'SET_FILTERED_IDEAS'
+export const UPDATE_IDEA = 'UPDATE_IDEA'
+export const CREATE_IDEA = 'CREATE_IDEA'
+export const DELETE_IDEA = 'DELETE_IDEA'

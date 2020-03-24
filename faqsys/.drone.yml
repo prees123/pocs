@@ -1,0 +1,251 @@
+# secrets from ivy-platform ORG Vault
+secrets:
+  cache_s3_server:
+    path: secret/shared/drone/prod-secrets/cache_s3_server
+  cache_s3_access_key:
+    path: secret/shared/drone/prod-secrets/cache_s3_access_key
+  cache_s3_secret_key:
+    path: secret/shared/drone/prod-secrets/cache_s3_secret_key
+  cache_s3_ca_cert:
+    path: secret/shared/drone/prod-secrets/cache_s3_ca_cert
+  TAP_ARTIFACTORY_PASSWORD:
+    path: /secret/shared/tap/drone-secrets/ARTIFACTORY_SVCPEJKN001_BINREPO
+  GIT_LOGIN:
+    path: /secret/org/ivy-platform/git_login
+  GIT_PASSWORD:
+    path: /secret/org/ivy-platform/git_password
+  GIT_USER_EMAIL:
+    path: /secret/org/ivy-platform/git_user_email
+  GIT_USER_NAME:
+    path: /secret/org/ivy-platform/git_user_name
+
+# release
+deployGitRepoBaseUrl: &deployGitRepoBaseUrl https://git.target.com/promotions
+deployGitRepoName: &deployGitRepoName promo-deploy
+releaseScriptName: &releaseScriptName scripts/git-create-release-non-gradle.sh
+
+# secrets (since environment blocks don’t accept secrets)
+git-secrets: &git-secrets
+- source: GIT_LOGIN
+  target: GITLOGIN
+- source: GIT_PASSWORD
+  target: GITPASSWORD
+- source: GIT_USER_EMAIL
+  target: GITUSEREMAIL
+- source: GIT_USER_NAME
+  target: GITUSERNAME
+
+pipeline:
+  restore_cache:
+    when:
+      event: [ push, pull_request, tag ]
+      branch: [ develop, RELEASE-*, refs/tags/v* ]
+    image: docker.target.com/drone/drone-s3-cache:2
+    pull: true
+    restore: true
+    secrets: [ cache_s3_server, cache_s3_access_key, cache_s3_secret_key, cache_s3_ca_cert ]
+    filename: archive.tgz
+
+  get_dependencies:
+    when:
+      event: [push, pull_request, tag]
+      branch: [develop, RELEASE-*, refs/tags/v*]
+    image: node:8.9.3
+    pull: true
+    commands:
+      - yarn
+
+  test-base:
+    when:
+      event: [push, pull_request]
+      branch: [develop, RELEASE-*]
+    image: node:8.9.3
+    pull: true
+    commands:
+      - yarn lint
+      - yarn test
+
+  ## WEBPACK BUILD
+  webpack_build_dev:
+    when:
+      event: push
+      branch: develop
+    image: node:8.9.3
+    pull: true
+    environment:
+      - APP_ENV=dev
+    commands:
+      - yarn build
+
+  docker-build-publish-dev:
+    when:
+      event: push
+      branch: develop
+    image: plugins/docker:17.05
+    registry: docker.target.com
+    repo: docker.target.com/app/trellis/trellis-dev
+    dockerfile: Dockerfile
+    tags:
+      - "b${DRONE_BUILD_NUMBER}-${DRONE_COMMIT:0:10}"
+      - "latest"
+    username: svcpejkn001
+    secrets:
+      - source: TAP_ARTIFACTORY_PASSWORD
+        target: plugin_password
+
+  webpack_build_test:
+    when:
+      event: tag
+      branch: refs/tags/v*
+    image: node:8.9.3
+    pull: true
+    environment:
+      - APP_ENV=test
+    commands:
+      - yarn build
+
+  docker-build-publish-test:
+    when:
+      branch: refs/tags/v*
+      event: tag
+    image: plugins/docker:17.05
+    registry: docker.target.com
+    repo: docker.target.com/app/trellis/trellis-test
+    dockerfile: Dockerfile
+    tags:
+      - "${DRONE_TAG}"
+    username: svcpejkn001
+    secrets:
+      - source: TAP_ARTIFACTORY_PASSWORD
+        target: plugin_password
+
+  webpack_build_stg:
+    when:
+      event: tag
+      branch: refs/tags/v*
+    image: node:8.9.3
+    pull: true
+    environment:
+      - APP_ENV=stg
+    commands:
+      - yarn build
+
+  docker-build-publish-stg:
+    when:
+      branch: refs/tags/v*
+      event: tag
+    image: plugins/docker:17.05
+    registry: docker.target.com
+    repo: docker.target.com/app/trellis/trellis-stg
+    dockerfile: Dockerfile
+    tags:
+      - "${DRONE_TAG}"
+    username: svcpejkn001
+    secrets:
+      - source: TAP_ARTIFACTORY_PASSWORD
+        target: plugin_password
+
+  webpack_build_prod:
+    when:
+      event: tag
+      branch: refs/tags/v*
+    image: node:8.9.3
+    pull: true
+    environment:
+      - APP_ENV=prod
+    commands:
+      - yarn build
+
+  docker-build-publish-prod:
+    when:
+      branch: refs/tags/v*
+      event: tag
+    image: plugins/docker:17.05
+    registry: docker.target.com
+    repo: docker.target.com/app/trellis/trellis-prod
+    dockerfile: Dockerfile
+    tags:
+      - "${DRONE_TAG}"
+    username: svcpejkn001
+    secrets:
+      - source: TAP_ARTIFACTORY_PASSWORD
+        target: plugin_password
+
+  rebuild_cache:
+    when:
+      event: [ push, pull_request, tag ]
+      branch: [ develop, RELEASE-*, refs/tags/v* ]
+    image: docker.target.com/drone/drone-s3-cache:2
+    rebuild: true
+    pull: true
+    secrets: [ cache_s3_server, cache_s3_access_key, cache_s3_secret_key, cache_s3_ca_cert ]
+    filename: archive.tgz
+    mount:
+      - node_modules
+
+  flush_cache:
+    when:
+      event: push
+    image: docker.target.com/drone/drone-s3-cache:2
+    pull: true
+    secrets: [ cache_s3_server, cache_s3_access_key, cache_s3_secret_key, cache_s3_ca_cert ]
+    filename: archive.tgz
+    flush: true
+    flush_age: 14
+
+  create-release:
+    when:
+      event: tag
+      branch: refs/tags/release*
+    image: alpine:latest
+    pull: true
+    secrets: *git-secrets
+    environment:
+      releaseTag: "${DRONE_TAG}"
+      deployGitRepoBaseUrl: *deployGitRepoBaseUrl
+      deployGitRepoName: *deployGitRepoName
+      releaseScriptName: *releaseScriptName
+    commands:
+      - echo "Installing Stuff"
+      - apk add --no-cache coreutils
+      - echo "coreutils installed"
+      - apk add --no-cache bash
+      - echo "bash installed"
+      - apk add --no-cache git
+      - echo "git installed"
+      - apk add --no-cache sed
+      - echo "sed installed"
+
+      - echo "Getting $deployGitRepoName repo"
+      - git clone $deployGitRepoBaseUrl/$deployGitRepoName.git
+      - echo "Release script"
+      - ls -l $deployGitRepoName/$releaseScriptName
+
+      - gitRepoUrl=https://$GITLOGIN:$GITPASSWORD@git.target.com/${DRONE_REPO}.git
+      - $deployGitRepoName/$releaseScriptName -t $releaseTag -u $gitRepoUrl -n $GITUSERNAME -e $GITUSEREMAIL
+
+
+#-- NOTIFICATION -------------------------------------------------------------
+  email-failure:
+    when:
+      status: failure
+      event: push
+    image: drillster/drone-email:latest
+    pull: true
+    host: smtp.target.com
+    port: 25
+    skip_verify: true
+    from: drone-noreply@target.com
+    recipients: [ All-Ivy-PromoMgmt@Target.com ]
+
+  email-failure:
+    when:
+      status: failure
+      event: pull_request
+    image: drillster/drone-email:latest
+    pull: true
+    host: smtp.target.com
+    port: 25
+    skip_verify: true
+    from: drone-noreply@target.com
+    recipients: [ "${DRONE_COMMIT_AUTHOR_EMAIL}" ]

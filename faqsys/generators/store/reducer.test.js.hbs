@@ -1,0 +1,21 @@
+import reducer from '../reducer'
+import { {{snakeCase actionName}} } from '../actionType'
+
+describe('{{camelCase name}} reducer', () => {
+  const initialState = {
+  }
+
+  it('returns the initial state', () => {
+    expect(
+      reducer(undefined, {})
+    ).toEqual(initialState)
+  })
+
+  it('{{snakeCase actionName}} adds the new state to the state', () => {
+    const stateUpdate = {
+    }
+    expect(reducer({}, {
+      type: {{snakeCase actionName}},
+    })).toEqual(stateUpdate)
+  })
+})

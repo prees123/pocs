@@ -1,0 +1,126 @@
+ .articleRoot {
+  flex-grow: 1;
+  margin-left: 10%;
+  margin-right: 10%;
+  margin-top: 10%;
+  margin-bottom: 10%;
+}
+
+.formSection {
+  padding-top: 1em;
+  padding-bottom: 2em;
+  font-style: normal;
+}
+.ql-container {
+  margin-bottom: 2em;
+   height: auto !important;
+   min-height: 150px;
+
+ }
+ .quillPaper {
+    width: 75%;
+ }
+ .ql-editor {
+   height: auto !important;
+ }
+ .titleField {
+   width: 400px;
+   margin-bottom: 500px;
+ }
+.paper {
+   width: 75%;
+   margin-bottom: 2em;
+}
+ .formPaper {
+   height: 80%;
+   width: 80%;
+   padding-left: 2em;
+   padding-top: 2em;
+   padding-right: 2em;
+ }
+ .sectionLabel {
+   font-style: bold;
+   font-size: 18px !important;
+   margin-bottom: 1em;
+   padding-bottom: .5em;
+ }
+ .sectionLabelArticle {
+   position:relative;
+   font-style: bold;
+   font-size: 18px !important;
+   margin-bottom: 1em;
+   margin-top:1em !important;
+   padding-bottom: .5em;
+ }
+
+ .titleLabel {
+   font-size: 28px !important;
+   padding-bottom: 2em;
+   font-style: bold;
+ }
+
+ .buttonGroup {
+   padding-bottom: 10px;
+   font-size: 14px !important;
+ }
+
+ .buttonLabel {
+   font-size: 14px !important;
+   font-style: bold;
+ }
+
+ .Backbtn {
+   float: right;
+
+ }
+ .delBtn {
+   z-index: 1;
+   float: right !important;
+ }
+ .categoryInput {
+   width: 250px;
+ }
+
+ .metaText {
+   font-style: italic !important;
+   font-size: 10pt !important;
+ }
+.fileBtn {
+  margin-right: 1em !important;
+}
+.btnGroup {
+  margin-bottom: 1em !important;
+}
+.grid {
+  padding-top: 15px;
+}
+.chip {
+margin-left: 10px !important;
+margin-top: 1.5em;
+}
+.chip:hover {
+  background-color: #026549 !important;
+  color: #ffffff;
+}
+.mediaPaper {
+min-height: 100px;
+}
+.captionField {
+    width: 96%;
+    margin-left: 10px !important;
+}
+.descField {
+  margin-bottom: 2em;
+}
+ #cancel {
+   float: left;
+ }
+
+ #submit {
+   float: right;
+ }
+
+ #save {
+   float: right;
+   margin-right: 25px;
+ }

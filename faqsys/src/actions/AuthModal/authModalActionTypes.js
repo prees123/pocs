@@ -1,0 +1,1 @@
+export const SHOW_AUTH_MODAL = 'SHOW_AUTH_MODAL'
