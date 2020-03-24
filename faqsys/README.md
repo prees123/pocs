@@ -6,13 +6,9 @@
      |  |     |  |__|  | |  |__    |  |      |  |      |  | |  |____
      |  |     |   _   _| |   __|   |  |      |  |      |  | |____   |
      |  |     |  | \  \  |  |____  |  |____  |  |____  |  |  ____|  |
-     |__|     |__|  \__\ |_______| |_______| |_______| |__| |_______|     (C)Stephanie.Tam
+     |__|     |__|  \__\ |_______| |_______| |_______| |__| |_______|     
 ```
 
-
-![Praxis](https://git.target.com/avatars/u/5724?s=200)
-
-This app is built on [Praxis](https://praxis.target.com/). Praxis is Target's internally-developed kickstarter user interface.
 
 ## Setting Up trellis
 Use the version of node specified in the `.nvmrc` file.
