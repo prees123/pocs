@@ -1,0 +1,15 @@
+@mixin font-face($family,$src,$style: normal,$weight: normal) {
+	@font-face {
+		font-family: $family;
+		src: url('#{$src}.eot'); // ie9 compatability
+		src: url('#{$src}.eot?#iefix') format('embedded-opentype'), // ie8 and below
+			url('#{$src}.woff') format('woff'), // standards
+			url('#{$src}.ttf') format('truetype'); // safari, android, and ios
+
+		font-style: $style;
+		font-weight: $weight;
+	}
+}
+
+@include font-face('Gotham-Bold','fonts/Gotham-Bold/Gotham-Bold');
+@include font-face('Gotham-Book','fonts/Gotham-Book/Gotham-Book');

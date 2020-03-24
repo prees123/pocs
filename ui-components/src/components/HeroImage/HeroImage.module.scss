@@ -1,0 +1,23 @@
+.storyPanel {
+    position: relative;
+    width: 100%;
+    background: transparent;
+}
+
+.storyPanelLayer {
+    position: absolute;
+    width: 50%;
+    text-align: center;
+    left: 0%;
+    top: 36%;
+    color: white;
+    z-index: 1;
+    &.right {
+        left: auto;
+        right: 0%;
+    }
+    &.center {
+        left: auto;
+        width: 100%;
+    }
+}
