@@ -1,12 +1,12 @@
 {
-  "name": "bose-ui-components",
+  "name": "ui-components",
   "version": "1.0.0",
-  "description": "Bose UI Component Library",
+  "description": "UI Component Library",
   "author": "Preejith Ponneth",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BoseCorp/bose-ui-components.git"
+    "url": "git+https://github.com/prees123/pocs.git"
   },
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -63,9 +63,9 @@
     "dist"
   ],
   "bugs": {
-    "url": "https://github.com/BoseCorp/bose-ui-components/issues"
+    "url": "https://github.com/prees123/pocs/issues"
   },
-  "homepage": "https://github.com/BoseCorp/bose-ui-components#readme",
+  "homepage": "https://github.com/prees123/pocs/blob/master/README.md",
   "directories": {
     "example": "example"
   },
